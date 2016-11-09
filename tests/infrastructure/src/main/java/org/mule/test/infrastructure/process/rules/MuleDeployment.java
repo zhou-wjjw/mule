@@ -13,6 +13,8 @@ import static java.lang.System.getProperty;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 
+import org.mule.tck.probe.JUnitProbe;
+import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.process.MuleProcessController;
 
 import java.io.File;
@@ -27,10 +29,6 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-
-import org.mule.tck.probe.JUnitProbe;
-import org.mule.tck.probe.PollingProber;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,21 +52,31 @@ import org.slf4j.LoggerFactory;
  * </pre>
  *
  * <table>
- *   <tr>
- *     <td><b>System Property</b></td><td><b>Default Value</b></td><td><b>Description</b></td>
- *   </tr>
- *   <tr>
- *     <td>mule.test.deleteOnExit</td><td>true</td><td>When false, keeps the used Mule Server under target/server/TEST_NAME</td>
- *   </tr>
- *   <tr>
- *     <td>mule.test.stopOnExit</td><td>true</td><td>When false, keeps the used Mule Server running</td>
- *   </tr>
- *   <tr>
- *     <td>mule.test.deployment.timeout</td><td>60000</td><td>Timeout for starting Mule (in milliseconds)</td>
- *   </tr>
- *   <tr>
- *     <td>mule.test.debug</td><td>false</td><td>Mule server wait for remote debugger attachment.</td>
- *   </tr>
+ * <tr>
+ * <td><b>System Property</b></td>
+ * <td><b>Default Value</b></td>
+ * <td><b>Description</b></td>
+ * </tr>
+ * <tr>
+ * <td>mule.test.deleteOnExit</td>
+ * <td>true</td>
+ * <td>When false, keeps the used Mule Server under target/server/TEST_NAME</td>
+ * </tr>
+ * <tr>
+ * <td>mule.test.stopOnExit</td>
+ * <td>true</td>
+ * <td>When false, keeps the used Mule Server running</td>
+ * </tr>
+ * <tr>
+ * <td>mule.test.deployment.timeout</td>
+ * <td>60000</td>
+ * <td>Timeout for starting Mule (in milliseconds)</td>
+ * </tr>
+ * <tr>
+ * <td>mule.test.debug</td>
+ * <td>false</td>
+ * <td>Mule server wait for remote debugger attachment.</td>
+ * </tr>
  * </table>
  */
 public class MuleDeployment extends MuleInstallation {
@@ -223,6 +231,7 @@ public class MuleDeployment extends MuleInstallation {
     super.before();
     prober = new PollingProber(deploymentTimeout, POLL_DELAY_MILLIS);
     mule = new MuleProcessController(getMuleHome());
+    addShutdownHooks();
     try {
       doBefore();
     } catch (Error e) {
@@ -330,6 +339,15 @@ public class MuleDeployment extends MuleInstallation {
       }
       super.after();
     }
+  }
+
+  protected void addShutdownHooks() {
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+
+      public void run() {
+        after();
+      }
+    });
   }
 
 }
