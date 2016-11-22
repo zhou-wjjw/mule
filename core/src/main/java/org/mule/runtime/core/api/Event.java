@@ -65,6 +65,26 @@ public interface Event extends MuleEvent {
   String getCorrelationId();
 
   /**
+   * Returns the parameter registered under the given {@code key}
+   *
+   * @param key the name or key of the parameter. This must be non-null.
+   * @param <T> the type of the variable value.
+   * @return a {@link TypedValue} containing the parameter's value and {@link DataType}
+   * @throws java.util.NoSuchElementException if the parameter does not exist.
+   */
+  <T> TypedValue<T> getParameter(String key);
+
+  /**
+   * Returns the property registered under the given {@code key}
+   *
+   * @param key the name or key of the property. This must be non-null.
+   * @param <T> the type of the variable value.
+   * @return a {@link TypedValue} containing the property's value and {@link DataType}
+   * @throws java.util.NoSuchElementException if the property does not exist.
+   */
+  <T> TypedValue<T> getProperty(String key);
+
+  /**
    * Returns the message payload for this event
    * 
    * @return the message payload for this event

@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-//TODO until MULE-10291 & MULE-10353 are done, we will use flowVars to store the parameter.value and property.value
+//TODO until MULE-10291 & MULE-10353 are done, we will use flowVars to store the parameter.value and property.value xx
 public class ModuleOperationVariableMapContext extends AbstractMapContext<Object> {
 
   private Event event;

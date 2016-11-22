@@ -10,7 +10,6 @@ package org.mule.runtime.core.message;
 import static java.util.Optional.ofNullable;
 import static org.mule.runtime.core.MessageExchangePattern.REQUEST_RESPONSE;
 import static org.mule.runtime.core.util.SystemUtils.getDefaultEncoding;
-
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Error;
 import org.mule.runtime.api.metadata.DataType;
@@ -34,10 +33,8 @@ import org.mule.runtime.core.config.i18n.CoreMessages;
 import org.mule.runtime.core.connector.DefaultReplyToHandler;
 import org.mule.runtime.core.context.notification.DefaultFlowCallStack;
 import org.mule.runtime.core.metadata.DefaultTypedValue;
-import org.mule.runtime.core.processor.strategy.LegacyNonBlockingProcessingStrategyFactory;
 import org.mule.runtime.core.processor.strategy.LegacyNonBlockingProcessingStrategyFactory.LegacyNonBlockingProcessingStrategy;
 import org.mule.runtime.core.session.DefaultMuleSession;
-import org.mule.runtime.core.transaction.TransactionCoordination;
 import org.mule.runtime.core.util.CopyOnWriteCaseInsensitiveMap;
 import org.mule.runtime.core.util.store.DeserializationPostInitialisable;
 
@@ -274,6 +271,8 @@ public class DefaultEventBuilder implements Event.Builder {
     private final boolean notificationsEnabled;
 
     private final CopyOnWriteCaseInsensitiveMap<String, DefaultTypedValue> variables = new CopyOnWriteCaseInsensitiveMap<>();
+    private final CopyOnWriteCaseInsensitiveMap<String, DefaultTypedValue> parameters = new CopyOnWriteCaseInsensitiveMap<>();
+    private final CopyOnWriteCaseInsensitiveMap<String, DefaultTypedValue> properties = new CopyOnWriteCaseInsensitiveMap<>();
 
     private FlowCallStack flowCallStack = new DefaultFlowCallStack();
     private final String legacyCorrelationId;
@@ -500,10 +499,26 @@ public class DefaultEventBuilder implements Event.Builder {
 
     @Override
     public <T> TypedValue<T> getVariable(String key) {
-      DefaultTypedValue<T> typedValue = variables.get(key);
+      return getTypedValueFrom(key, variables, "The flow variable '" + key + "' does not exist.");
+    }
 
+    @Override
+    public <T> TypedValue<T> getParameter(String key)
+    {
+      return getTypedValueFrom(key, parameters, "The parameter variable '" + key + "' does not exist.");
+    }
+
+    @Override
+    public <T> TypedValue<T> getProperty(String key)
+    {
+      return getTypedValueFrom(key, properties, "The property variable '" + key + "' does not exist.");
+    }
+
+    private <T> TypedValue<T> getTypedValueFrom(String key, CopyOnWriteCaseInsensitiveMap<String, DefaultTypedValue> map, String errorMessage)
+    {
+      DefaultTypedValue<T> typedValue = map.get(key);
       if (typedValue == null) {
-        throw new NoSuchElementException("The flow variable '" + key + "' does not exist.");
+        throw new NoSuchElementException(errorMessage);
       } else {
         return typedValue;
       }
