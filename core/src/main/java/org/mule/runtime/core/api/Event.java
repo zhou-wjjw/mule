@@ -431,7 +431,8 @@ public interface Event extends Serializable {
    * @return event for currently executing thread.
    */
   static Event getCurrentEvent() {
-    return CurrentEventHolder.currentEvent.get();
+    // return CurrentEventHolder.currentEvent.get();
+    return null;
   }
 
   /**
