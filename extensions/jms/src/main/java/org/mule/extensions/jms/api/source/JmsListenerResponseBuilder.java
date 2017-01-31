@@ -12,8 +12,6 @@ import org.mule.extensions.jms.internal.publish.JmsPublishParameters;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.dsl.xml.XmlHints;
-import org.mule.runtime.extension.api.annotation.param.NullSafe;
-import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 
@@ -22,17 +20,16 @@ import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
  *
  * @since 4.0
  */
-@Alias("response-builder")
+@Alias("response")
 @XmlHints(allowTopLevelDefinition = true)
 public class JmsListenerResponseBuilder {
 
   @Parameter
-  @Optional
-  @NullSafe
   @Expression(NOT_SUPPORTED)
+  @ParameterGroup(name = "Response", showInDsl = true)
   private MessageBuilder messageBuilder;
 
-  @ParameterGroup(name = "Reply Configuration")
+  @Alias("response-configuration")
   private JmsPublishParameters overrides;
 
   public MessageBuilder getMessageBuilder() {

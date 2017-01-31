@@ -22,7 +22,6 @@ import org.mule.extensions.jms.internal.publish.JmsPublishParameters;
 import org.mule.runtime.extension.api.annotation.dsl.xml.XmlHints;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.param.Connection;
-import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.UseConfig;
@@ -65,7 +64,8 @@ public final class JmsPublish {
                       @XmlHints(
                           allowReferences = false) @Summary("The name of the Destination where the Message should be sent") String destination,
                       @Optional(defaultValue = "QUEUE") @Summary("The type of the Destination") DestinationType destinationType,
-                      @Optional @NullSafe @Summary("A builder for the message that will be published") MessageBuilder messageBuilder,
+                      @Summary("A builder for the message that will be published") @ParameterGroup(name = "Message Builder",
+                          showInDsl = true) MessageBuilder messageBuilder,
                       @ParameterGroup(name = "Publish Configuration") JmsPublishParameters overrides)
 
       throws JmsExtensionException {

@@ -11,6 +11,7 @@ import static org.mule.extensions.jms.api.config.AckMode.AUTO;
 import static org.mule.extensions.jms.internal.common.JmsOperationCommons.evaluateMessageAck;
 import static org.mule.extensions.jms.internal.common.JmsOperationCommons.resolveMessageContentType;
 import static org.mule.extensions.jms.internal.common.JmsOperationCommons.resolveOverride;
+import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
 import static org.slf4j.LoggerFactory.getLogger;
 import org.mule.extensions.jms.api.config.AckMode;
 import org.mule.extensions.jms.api.config.JmsConfig;
@@ -33,14 +34,15 @@ import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.scheduler.SchedulerService;
 import org.mule.runtime.core.util.StringMessageUtils;
 import org.mule.runtime.extension.api.annotation.Alias;
+import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.dsl.xml.XmlHints;
 import org.mule.runtime.extension.api.annotation.execution.OnError;
 import org.mule.runtime.extension.api.annotation.execution.OnSuccess;
 import org.mule.runtime.extension.api.annotation.metadata.MetadataScope;
 import org.mule.runtime.extension.api.annotation.param.Connection;
-import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
+import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.UseConfig;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.mule.runtime.extension.api.annotation.source.EmitsResponse;
@@ -175,14 +177,16 @@ public class JmsListener extends Source<Object, JmsAttributes> {
   }
 
   @OnSuccess
-  public void onSuccess(@Optional @NullSafe JmsListenerResponseBuilder response,
+  public void onSuccess(@Expression(NOT_SUPPORTED) @ParameterGroup(name = "Response Builder",
+      showInDsl = true) MessageBuilder messageBuilder,
+                        JmsPublishParameters responseConfiguration,
                         SourceCallbackContext callbackContext) {
 
     ackOriginalMessage(callbackContext);
 
     Destination replyTo = callbackContext.getVariable(REPLY_TO_DESTINATION);
     if (replyTo != null) {
-      doReply(response.getMessageBuilder(), response.getOverrides(), callbackContext, replyTo);
+      doReply(messageBuilder, responseConfiguration, callbackContext, replyTo);
     }
   }
 
@@ -191,7 +195,8 @@ public class JmsListener extends Source<Object, JmsAttributes> {
     LOGGER.error(error.getDescription(), error.getCause());
   }
 
-  private void doReply(MessageBuilder messageBuilder, JmsPublishParameters overrides,
+  private void doReply(@ParameterGroup(name = "Message Builder", showInDsl = true) MessageBuilder messageBuilder,
+                       JmsPublishParameters overrides,
                        SourceCallbackContext callbackContext, Destination replyTo) {
     try {
       boolean replyToTopic = replyDestinationIsTopic(replyTo);

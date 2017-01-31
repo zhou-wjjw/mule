@@ -19,6 +19,7 @@ import static org.mule.metadata.java.api.utils.JavaTypeUtils.getType;
 import static org.mule.runtime.api.meta.model.parameter.ParameterGroupModel.DEFAULT_GROUP_NAME;
 import static org.mule.runtime.api.util.Preconditions.checkArgument;
 import static org.mule.runtime.core.util.StringUtils.ifNotBlank;
+import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.isList;
 import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.isMap;
 import static org.mule.runtime.extension.api.util.ExtensionModelUtils.roleOf;
 import static org.mule.runtime.extension.api.util.NameUtils.getComponentDeclarationTypeName;
@@ -450,7 +451,8 @@ public final class JavaModelLoaderDelegate {
                                                                       extensionParameter.getType().getName()));
           }
 
-          if (!isInstantiable(nullSafeType)) {
+          if (!isInstantiable(nullSafeType) && !isMap(nullSafeType) && !isList(nullSafeType)) {
+
             throw new IllegalParameterModelDefinitionException(
                                                                format("Parameter '%s' is annotated with '@%s' but is of type '%s'. That annotation can only be "
                                                                    + "used with complex instantiable types (Pojos, Lists, Maps)",

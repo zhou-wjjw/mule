@@ -46,8 +46,8 @@ import org.slf4j.Logger;
 public class MessageBuilder {
 
   private static final Logger LOGGER = getLogger(MessageBuilder.class);
+  private static final String BODY_ENCODING_JMS_PROPERTY = "MM_MESSAGE_ENCODING";
   public static final String BODY_CONTENT_TYPE_JMS_PROPERTY = "MM_MESSAGE_CONTENT_TYPE";
-  public static final String BODY_ENCODING_JMS_PROPERTY = "MM_MESSAGE_ENCODING";
 
   /**
    * the body of the {@link Message}

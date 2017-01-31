@@ -35,7 +35,6 @@ import org.mule.runtime.extension.api.annotation.dsl.xml.XmlHints;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.param.Connection;
-import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.UseConfig;
@@ -82,8 +81,10 @@ public class JmsPublishConsume {
   public Result<Object, JmsAttributes> publishConsume(@UseConfig JmsConfig config, @Connection JmsConnection connection,
                                                       @Placement(order = 0) @XmlHints(
                                                           allowReferences = false) @Summary("The name of the Destination where the Message should be sent") String destination,
-                                                      @Optional @NullSafe @Placement(
-                                                          order = 1) @Summary("A builder for the message that will be published") MessageBuilder messageBuilder,
+                                                      @Placement(
+                                                          order = 1) @Summary("A builder for the message that will be published") @ParameterGroup(
+                                                              name = "Message Builder",
+                                                              showInDsl = true) MessageBuilder messageBuilder,
                                                       @Optional AckMode ackMode,
                                                       @Optional(
                                                           defaultValue = "10000") @Summary("Maximum time to wait for a response before timeout") long maximumWait,
