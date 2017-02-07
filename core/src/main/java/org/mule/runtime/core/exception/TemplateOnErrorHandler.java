@@ -9,6 +9,8 @@ package org.mule.runtime.core.exception;
 import static org.mule.runtime.core.api.processor.MessageProcessors.newChain;
 import static org.mule.runtime.core.context.notification.ExceptionStrategyNotification.PROCESS_END;
 import static org.mule.runtime.core.context.notification.ExceptionStrategyNotification.PROCESS_START;
+import static reactor.core.publisher.Mono.from;
+import static reactor.core.publisher.Mono.just;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.InitialisationException;
@@ -26,6 +28,8 @@ import org.mule.runtime.core.message.DefaultExceptionPayload;
 import org.mule.runtime.core.processor.AbstractRequestResponseMessageProcessor;
 import org.mule.runtime.core.routing.requestreply.ReplyToPropertyRequestReplyReplier;
 import org.mule.runtime.core.transaction.TransactionCoordination;
+
+import org.reactivestreams.Publisher;
 
 public abstract class TemplateOnErrorHandler extends AbstractExceptionListener
     implements MessagingExceptionHandlerAcceptor {
@@ -46,7 +50,10 @@ public abstract class TemplateOnErrorHandler extends AbstractExceptionListener
     }
   }
 
-
+  @Override
+  public Publisher<Event> apply(MessagingException exception) {
+    return new ExceptionMessageProcessor(exception, muleContext, flowConstruct).apply(just(exception.getEvent()));
+  }
 
   private class ExceptionMessageProcessor extends AbstractRequestResponseMessageProcessor {
 
@@ -57,6 +64,19 @@ public abstract class TemplateOnErrorHandler extends AbstractExceptionListener
       this.exception = exception;
       setMuleContext(muleContext);
       setFlowConstruct(flowConstruct);
+      next = new Processor() {
+
+        @Override
+        public Event process(Event event) throws MuleException {
+          return route(event, exception);
+        }
+
+        @Override
+        public Publisher<Event> apply(Publisher<Event> publisher) {
+          return from(publisher).then(event -> from(routeAsync(event, exception)));
+        }
+      };
+
     }
 
     @Override
@@ -80,11 +100,6 @@ public abstract class TemplateOnErrorHandler extends AbstractExceptionListener
         return nullifyExceptionPayloadIfRequired(response);
       }
       return response;
-    }
-
-    @Override
-    protected Event processNext(Event event) throws MuleException {
-      return route(event, exception);
     }
 
     @Override
@@ -160,6 +175,16 @@ public abstract class TemplateOnErrorHandler extends AbstractExceptionListener
       }
     }
     return event;
+  }
+
+  protected Publisher<Event> routeAsync(Event event, MessagingException t) {
+    if (!getMessageProcessors().isEmpty()) {
+      event = Event.builder(event)
+          .message(InternalMessage.builder(event.getMessage()).exceptionPayload(new DefaultExceptionPayload(t)).build())
+          .build();
+      return configuredMessageProcessors.apply(just(event));
+    }
+    return just(event);
   }
 
   @Override

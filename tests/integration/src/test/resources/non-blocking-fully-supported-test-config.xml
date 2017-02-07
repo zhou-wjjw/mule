@@ -229,9 +229,7 @@
         <error-handler>
             <on-error-continue>
                 <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
-                <set-variable variableName="beforeThread" value="#[mel:Thread.currentThread()]"/>
                 <test:non-blocking-processor/>
-                <test:assert count="1" expression="#[mel:Thread.currentThread()!=beforeThread  and assertPayload()]"/>
             </on-error-continue>
         </error-handler>
     </flow>

@@ -17,6 +17,8 @@ import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.lifecycle.LifecycleUtils;
 import org.mule.runtime.core.api.processor.Processor;
 
+import org.reactivestreams.Publisher;
+
 //TODO: MULE-9307 re-write junits for rollback exception strategy
 
 
@@ -97,6 +99,12 @@ public class OnErrorPropagateHandler extends TemplateOnErrorHandler {
       resultEvent = super.route(event, t);
     }
     return resultEvent;
+  }
+
+  @Override
+  protected Publisher<Event> routeAsync(Event event, MessagingException t) {
+    // TODO
+    return super.routeAsync(event, t);
   }
 
   @Override
