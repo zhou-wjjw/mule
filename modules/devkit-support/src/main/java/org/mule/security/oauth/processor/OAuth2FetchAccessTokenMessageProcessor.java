@@ -35,8 +35,8 @@ public class OAuth2FetchAccessTokenMessageProcessor extends FetchAccessTokenMess
 {
 
     private static final Logger logger = LoggerFactory.getLogger(OAuth2FetchAccessTokenMessageProcessor.class);
-    private static final Pattern EVENT_ID_PATTERN = Pattern.compile("<<MULE_EVENT_ID=([\\w-]*)>>");
-    private static final Pattern ORIGINAL_STATE_PATTERN = Pattern.compile("<<MULE_EVENT_ID=[\\w-]*>>(.*)");
+    private static final Pattern EVENT_ID_PATTERN = Pattern.compile("__MULE_EVENT_ID=([\\w-]*)__");
+    private static final Pattern ORIGINAL_STATE_PATTERN = Pattern.compile("__MULE_EVENT_ID=[\\w-]*__(.*)");
 
     private OAuth2Manager<OAuth2Adapter> oauthManager;
 
