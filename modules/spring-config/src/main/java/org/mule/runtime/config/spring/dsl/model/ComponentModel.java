@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanReference;
 
@@ -53,7 +52,6 @@ public class ComponentModel {
   private Set<String> schemaValueParameter = new HashSet<>();
   // TODO MULE-9638 This must go away from component model once it's immutable.
   private ComponentModel parent;
-  private Map<String, Object> annotations = new HashedMap();
   private List<ComponentModel> innerComponents = new ArrayList<>();
   private String textContent;
   private DefaultComponentLocation componentLocation;
@@ -229,10 +227,6 @@ public class ComponentModel {
     return this.schemaValueParameter.contains(parameterName);
   }
 
-  public Map<String, Object> getAnnotations() {
-    return unmodifiableMap(annotations);
-  }
-
   // TODO MULE-11355: Make the ComponentModel haven an ComponentConfiguration internally
   public ComponentConfiguration getConfiguration() {
     ComponentConfiguration.Builder builder = ComponentConfiguration.builder()
@@ -241,6 +235,7 @@ public class ComponentModel {
 
     parameters.entrySet().forEach(e -> builder.withParameter(e.getKey(), e.getValue()));
     innerComponents.forEach(i -> builder.withNestedComponent(i.getConfiguration()));
+    customAttributes.forEach(builder::addCustomAttribute);
 
     return builder.build();
   }

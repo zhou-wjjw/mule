@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
-      xmlns:db="http://www.mulesoft.org/schema/mule/db"
-      xmlns:httpn="http://www.mulesoft.org/schema/mule/httpn"
-      xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets"
+      xmlns:db="db"
+      xmlns:httpn="httpn"
+      xmlns:sockets="sockets"
       xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/httpn http://www.mulesoft.org/schema/mule/httpn/current/mule-httpn.xsd">
-   <db:config name="dbConfig">
+   <db:config xmlns:db="http://www.mulesoft.org/schema/mule/db" name="dbConfig">
       <db:derby-connection create="true" database="target/muleEmbeddedDB">
          <db:pooling-profile maxPoolSize="10"/>
          <db:connection-properties>
@@ -15,7 +15,9 @@
          </db:connection-properties>
       </db:derby-connection>
    </db:config>
-   <httpn:listener-config basePath="/" name="httpListener">
+   <httpn:listener-config xmlns:httpn="http://www.mulesoft.org/schema/mule/httpn"
+                          basePath="/"
+                          name="httpListener">
       <httpn:listener-connection disableValidation="true"
                                  host="localhost"
                                  port="49019"
@@ -27,13 +29,15 @@
          </tls:context>
       </httpn:listener-connection>
    </httpn:listener-config>
-   <httpn:request-config name="httpRequester">
+   <httpn:request-config xmlns:httpn="http://www.mulesoft.org/schema/mule/httpn"
+                         name="httpRequester">
       <httpn:request-connection host="localhost" port="49020">
          <httpn:authentication>
             <httpn:basic-authentication password="pass" username="user"/>
          </httpn:authentication>
          <httpn:client-socket-properties>
-            <sockets:tcp-client-socket-properties clientTimeout="1000"
+            <sockets:tcp-client-socket-properties xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets"
+                                                  clientTimeout="1000"
                                                   connectionTimeout="1000"
                                                   keepAlive="true"
                                                   linger="1000"
@@ -43,29 +47,34 @@
       </httpn:request-connection>
    </httpn:request-config>
    <flow initialState="stopped" name="testFlow">
-      <httpn:listener config-ref="httpListener" path="testBuilder">
+      <httpn:listener xmlns:httpn="http://www.mulesoft.org/schema/mule/httpn"
+                      config-ref="httpListener"
+                      path="testBuilder">
          <redelivery-policy maxRedeliveryCount="2" useSecureHash="true"/>
          <reconnect blocking="true" count="1" frequency="0"/>
          <httpn:response>
             <httpn:headers>#[mel:['content-type' : 'text/plain']]</httpn:headers>
          </httpn:response>
       </httpn:listener>
-      <db:bulk-insert>
+      <db:bulk-insert xmlns:db="http://www.mulesoft.org/schema/mule/db">
          <db:sql>INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)</db:sql>
          <db:parameter-types>
             <db:parameter-type key="name" type="VARCHAR"/>
             <db:parameter-type key="position" type="INTEGER"/>
          </db:parameter-types>
       </db:bulk-insert>
-      <httpn:request config-ref="httpRequester" method="POST" path="/nested"/>
-      <db:insert config-ref="dbConfig">
+      <httpn:request xmlns:httpn="http://www.mulesoft.org/schema/mule/httpn"
+                     config-ref="httpRequester"
+                     method="POST"
+                     path="/nested"/>
+      <db:insert xmlns:db="http://www.mulesoft.org/schema/mule/db" config-ref="dbConfig">
          <db:sql>INSERT INTO PLANET(POSITION, NAME, DESCRIPTION) VALUES (777, 'Pluto', :description)</db:sql>
          <db:parameter-types>
             <db:parameter-type key="description" type="CLOB"/>
          </db:parameter-types>
          <db:input-parameters>#[mel:['description' : payload]]</db:input-parameters>
       </db:insert>
-      <sockets:send-and-receive target="myVar">
+      <sockets:send-and-receive xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets" target="myVar">
          <repeatable-in-memory-stream bufferSizeIncrement="8"
                                       bufferUnit="KB"
                                       initialBufferSize="51"
