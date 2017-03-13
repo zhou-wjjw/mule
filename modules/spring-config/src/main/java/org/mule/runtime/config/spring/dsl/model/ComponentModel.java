@@ -9,11 +9,9 @@ package org.mule.runtime.config.spring.dsl.model;
 import static com.google.common.collect.ImmutableMap.copyOf;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Optional.ofNullable;
-import static org.mule.runtime.api.component.ComponentIdentifier.builder;
 import static org.mule.runtime.config.spring.dsl.model.ApplicationModel.NAME_ATTRIBUTE;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.util.Preconditions;
-import org.mule.runtime.config.spring.dsl.processor.xml.XmlCustomAttributeHandler;
 import org.mule.runtime.core.api.processor.MessageRouter;
 import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
@@ -238,15 +236,12 @@ public class ComponentModel {
   // TODO MULE-11355: Make the ComponentModel haven an ComponentConfiguration internally
   public ComponentConfiguration getConfiguration() {
     ComponentConfiguration.Builder builder = ComponentConfiguration.builder()
-        .withIdentifier(builder()
-            .withName(this.getIdentifier().getName())
-            .withPrefix((String) this.getCustomAttributes().get(XmlCustomAttributeHandler.NAMESPACE_URI))
-            .build())
+        .withIdentifier(this.getIdentifier())
         .withValue(textContent);
 
     parameters.entrySet().forEach(e -> builder.withParameter(e.getKey(), e.getValue()));
     innerComponents.forEach(i -> builder.withNestedComponent(i.getConfiguration()));
-
+    
     return builder.build();
   }
 
