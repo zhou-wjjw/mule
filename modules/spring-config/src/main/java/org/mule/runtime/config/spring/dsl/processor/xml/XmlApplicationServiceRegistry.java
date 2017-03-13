@@ -35,8 +35,8 @@ public class XmlApplicationServiceRegistry extends AbstractServiceRegistry {
     List<XmlNamespaceInfo> extensionNamespaces;
     if (extensionManager != null) {
       extensionNamespaces = extensionManager.getExtensions().stream()
-        .map(ext -> new StaticXmlNamespaceInfo(ext.getXmlDslModel().getNamespace(), ext.getXmlDslModel().getPrefix()))
-        .collect(new ImmutableListCollector<>());
+          .map(ext -> new StaticXmlNamespaceInfo(ext.getXmlDslModel().getNamespace(), ext.getXmlDslModel().getPrefix()))
+          .collect(new ImmutableListCollector<>());
     } else {
       extensionNamespaces = ImmutableList.of();
     }

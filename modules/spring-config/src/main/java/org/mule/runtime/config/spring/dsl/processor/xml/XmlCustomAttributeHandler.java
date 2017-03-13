@@ -74,7 +74,7 @@ public class XmlCustomAttributeHandler {
     private void addCustomAttributes(Node node) {
       this.builder.addCustomAttribute(XML_NODE, node);
       this.builder.addCustomAttribute(NAMESPACE_URI, node.getNamespaceURI());
-      if (node.getPrefix() != null){
+      if (node.getPrefix() != null) {
         this.builder.addCustomAttribute(DECLARED_PREFIX, node.getPrefix());
       }
     }
@@ -110,7 +110,7 @@ public class XmlCustomAttributeHandler {
       this.builder.addCustomAttribute(XML_NODE, node);
       this.builder.addCustomAttribute(NAMESPACE_URI, node.getNamespaceURI());
       this.builder.addCustomAttribute(NAMESPACE_URI, node.getNamespaceURI());
-      if (node.getPrefix() != null){
+      if (node.getPrefix() != null) {
         this.builder.addCustomAttribute(DECLARED_PREFIX, node.getPrefix());
       }
       return this;

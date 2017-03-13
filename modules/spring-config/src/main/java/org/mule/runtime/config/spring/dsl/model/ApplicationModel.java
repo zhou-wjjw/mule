@@ -371,7 +371,7 @@ public class ApplicationModel {
 
   private ComponentModel convertComponentConfiguration(ComponentConfiguration componentConfiguration, boolean isRoot) {
     ComponentModel.Builder builder = new ComponentModel.Builder()
-      .setIdentifier(componentConfiguration.getIdentifier());
+        .setIdentifier(componentConfiguration.getIdentifier());
     if (isRoot) {
       builder.markAsRootComponent();
     }

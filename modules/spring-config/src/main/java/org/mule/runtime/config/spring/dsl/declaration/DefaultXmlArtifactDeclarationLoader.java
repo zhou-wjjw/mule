@@ -45,7 +45,7 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
   public ArtifactDeclaration load(String configResource, DslResolvingContext context) {
     try {
       final Map<ExtensionModel, DslSyntaxResolver> resolvers = context.getExtensions().stream()
-        .collect(toMap(e -> e, e -> DslSyntaxResolver.getDefault(e, context)));
+          .collect(toMap(e -> e, e -> DslSyntaxResolver.getDefault(e, context)));
 
       InputStream appIs = Thread.currentThread().getContextClassLoader().getResourceAsStream(configResource);
       checkArgument(appIs != null, "The given application was not found as resource");
@@ -53,17 +53,16 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
       Document document = new XmlConfigurationDocumentLoader().loadDocument(Optional.empty(), configResource, appIs);
 
       ConfigLine configLine = new XmlApplicationParser(new SpiServiceRegistry())
-        .parse(document.getDocumentElement())
-        .orElseThrow(() -> new Exception("Failed to load config"));
+          .parse(document.getDocumentElement())
+          .orElseThrow(() -> new Exception("Failed to load config"));
 
       ArtifactDeclarer artifactDeclarer = ElementDeclarer.newArtifact();
 
 
 
-
       return artifactDeclarer.getDeclaration();
 
-    } catch (Exception e){
+    } catch (Exception e) {
       e.printStackTrace();
       return null;
     }
@@ -74,20 +73,21 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
     String namespace = configLine.getNamespace() == null ? CORE_PREFIX : configLine.getNamespace();
 
     ComponentModel.Builder builder = new ComponentModel.Builder()
-      .setIdentifier(builder().withPrefix(namespace).withName(configLine.getIdentifier()).build())
-      .setTextContent(configLine.getTextContent())
-      .setConfigFileName(configFileName)
-      .setLineNumber(configLine.getLineNumber());
+        .setIdentifier(builder().withPrefix(namespace).withName(configLine.getIdentifier()).build())
+        .setTextContent(configLine.getTextContent())
+        .setConfigFileName(configFileName)
+        .setLineNumber(configLine.getLineNumber());
 
     to(builder).addNode(from(configLine).getNode());
 
     for (SimpleConfigAttribute simpleConfigAttribute : configLine.getConfigAttributes().values()) {
-      builder.addParameter(simpleConfigAttribute.getName(), simpleConfigAttribute.getValue(), simpleConfigAttribute.isValueFromSchema());
+      builder.addParameter(simpleConfigAttribute.getName(), simpleConfigAttribute.getValue(),
+                           simpleConfigAttribute.isValueFromSchema());
     }
 
     List<ComponentModel> componentModels = configLine.getChildren().stream()
-      .map(childConfigLine -> extractComponentDefinitionModel(childConfigLine, configFileName))
-      .collect(Collectors.toList());
+        .map(childConfigLine -> extractComponentDefinitionModel(childConfigLine, configFileName))
+        .collect(Collectors.toList());
     componentModels.stream().forEach(componentDefinitionModel -> {
       builder.addChildComponentModel(componentDefinitionModel);
     });
@@ -104,7 +104,7 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
 
   private boolean isConfigurationTopComponent(ConfigLine parent) {
     return (parent.getIdentifier().equals(MULE_ROOT_ELEMENT) || parent.getIdentifier().equals(MULE_DOMAIN_ROOT_ELEMENT) ||
-      parent.getIdentifier().equals(POLICY_ROOT_ELEMENT));
+        parent.getIdentifier().equals(POLICY_ROOT_ELEMENT));
   }
   //
   //private DslElementModel createIdentifiedElement(ComponentConfiguration configuration) {

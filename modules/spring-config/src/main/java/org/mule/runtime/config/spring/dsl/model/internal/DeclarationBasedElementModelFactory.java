@@ -245,7 +245,7 @@ class DeclarationBasedElementModelFactory {
         .flatMap(g -> g.getParameterModels().stream())
         .collect(toList());
 
-     List<ParameterModel> nonGroupedParameters = model.getAllParameterModels().stream()
+    List<ParameterModel> nonGroupedParameters = model.getAllParameterModels().stream()
         .filter(p -> !inlineGroupedParameters.contains(p))
         .collect(toList());
 

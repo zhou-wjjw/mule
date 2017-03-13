@@ -152,7 +152,7 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
 
   // Scaffolding
   protected ApplicationModel loadApplicationModel() throws Exception {
-    
+
     InputStream appIs = Thread.currentThread().getContextClassLoader().getResourceAsStream(getConfigFile());
     checkArgument(appIs != null, "The given application was not found as resource");
 

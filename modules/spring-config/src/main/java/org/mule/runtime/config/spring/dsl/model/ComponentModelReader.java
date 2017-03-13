@@ -44,8 +44,8 @@ public class ComponentModelReader {
     String namespace = configLine.getNamespace() == null ? CORE_PREFIX : configLine.getNamespace();
     ComponentModel.Builder builder = new ComponentModel.Builder()
         .setIdentifier(builder()
-                         .withPrefix(namespace)
-                         .withName(configLine.getIdentifier())
+            .withPrefix(namespace)
+            .withName(configLine.getIdentifier())
             .build())
         .setTextContent(configLine.getTextContent())
         .setConfigFileName(configFileName)

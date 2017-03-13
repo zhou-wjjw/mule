@@ -85,7 +85,7 @@ public class DeclarationBasedDslElementModelSerializerTestCase extends AbstractE
             .withRefName("httpListener")
             .withParameter("basePath", "/")
             .withConnection(http.newConnection("listener-connection")
-                              .withParameter(DISABLE_CONNECTION_VALIDATION_PARAMETER_NAME, "true")
+                .withParameter(DISABLE_CONNECTION_VALIDATION_PARAMETER_NAME, "true")
                 .withParameter(TLS_PARAMETER_NAME, newObjectValue()
                     .withParameter("key-store", newObjectValue()
                         .withParameter("path", "ssltest-keystore.jks")

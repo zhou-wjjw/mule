@@ -82,10 +82,10 @@ class InfrastructureElementModelDelegate {
 
             parentConfig.withParameter(declaration.getName(), value);
             parentElement.containing(DslElementModel.builder()
-                                       .withModel(parameterModel)
-                                       .withDsl(paramDsl)
-                                       .withValue(value)
-                                       .build());
+                .withModel(parameterModel)
+                .withDsl(paramDsl)
+                .withValue(value)
+                .build());
           }
         });
     }
@@ -210,7 +210,7 @@ class InfrastructureElementModelDelegate {
 
   private void addSimpleParameter(ParameterElementDeclaration declaration,
                                   final ComponentConfiguration.Builder parentConfig) {
-    
+
   }
 
 }
